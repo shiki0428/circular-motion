@@ -1,35 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-
-// We create a "provider", which will store a value (here "Hello world").
-// By using a provider, this allows us to mock/override the value exposed.
-final helloWorldProvider = Provider((_) => 'Hello world');
 
 void main() {
-  runApp(
-    // For widgets to be able to read providers, we need to wrap the entire
-    // application in a "ProviderScope" widget.
-    // This is where the state of our providers will be stored.
-    ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(MyApp());
 }
 
-// Note: MyApp is a HookConsumerWidget, from flutter_hooks.
-class MyApp extends HookConsumerWidget {
+class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // To read our provider, we can use the hook "ref.watch(".
-    // This is only possible because MyApp is a HookConsumerWidget.
-    final String value = ref.watch(helloWorldProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: Text('Example')),
-        body: Center(
-          child: Text(value),
+      theme: ThemeData(primaryColor: Colors.blue),
+      home: const MyHomePage(),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: RotatedLogo(size: 200)),
+    );
+  }
+}
+
+class RotatedLogo extends StatefulWidget {
+  const RotatedLogo({
+    Key? key,
+    this.size = 50,
+    this.duration = const Duration(seconds: 1),
+  }) : super(key: key);
+  final double size;
+  final Duration duration;
+  @override
+  _RotatedLogoState createState() => _RotatedLogoState();
+}
+
+class _RotatedLogoState extends State<RotatedLogo>
+    with SingleTickerProviderStateMixin {
+  late AnimationController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AnimationController(vsync: this, duration: widget.duration);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return RotationTransition(
+      /// repeat を呼ぶだけ
+      turns: controller..repeat(),
+      child: const Text(
+        "aaa",
+        style: TextStyle(
+          fontSize: 200,
         ),
       ),
     );
